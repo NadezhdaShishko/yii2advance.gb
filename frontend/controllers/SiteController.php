@@ -87,12 +87,6 @@ class SiteController extends Controller
         return $this->render('hello');
     }
 
-    public function actionTaskTracker()
-    {
-        return $this->render('task-tracker');
-    }
-
-
     /**
      * Logs in a user.
      *
