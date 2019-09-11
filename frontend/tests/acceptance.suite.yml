@@ -3,7 +3,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - PhpBrowser:
-              url: http://test.yii2advanced.gb
+              url: http://test.yii2advanced.gb.testing
 
         - Yii2:
             part: init

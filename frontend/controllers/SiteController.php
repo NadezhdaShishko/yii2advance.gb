@@ -14,6 +14,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use common\models\User;
 
 /**
  * Site controller
@@ -27,23 +28,27 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['login', 'signup'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'index', 'contact', 'about'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['only-admin', 'add-admin'],
+                        'allow' => true,
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -75,16 +80,6 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
-    }
-
-    /**
-     * Displays hello world page.
-     *
-     * @return string
-     */
-    public function actionHello()
-    {
-        return $this->render('hello');
     }
 
     /**
@@ -120,6 +115,36 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    public function actionOnlyAdmin()
+    {
+        return $this->render('only-admin');
+    }
+
+    /**
+     * @throws \yii\base\Exception
+     */
+    public function actionAddAdmin() {
+        $user = User::find()->where(['username' => 'admin'])->one();
+        if (empty($user)) {
+            $user = new User();
+            $user->username = 'admin';
+            $user->email = 'admin@admin.ru';
+            $user->setPassword('admin');
+            $user->generateAuthKey();
+            if ($user->save()) {
+                echo 'good';
+                $adminRole = Yii::$app->authManager->getRole('admin');
+                Yii::$app->authManager->assign($adminRole, $user->id);
+            } else {
+                var_dump($user->errors);
+            }
+        } else {
+            $adminRole = Yii::$app->authManager->getRole('admin');
+            Yii::$app->authManager->assign($adminRole, $user->id);
+            echo 'админ уже есть';
+        }
     }
 
     /**
@@ -163,9 +188,13 @@ class SiteController extends Controller
     public function actionSignup()
     {
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
-            Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
-            return $this->goHome();
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->signup()) {
+                if (Yii::$app->getUser()->login($user)) {
+                    Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
+                    return $this->goHome();
+                }
+            }
         }
 
         return $this->render('signup', [
