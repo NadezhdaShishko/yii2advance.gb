@@ -33,14 +33,15 @@ class SignupForm extends Model
             ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
 
             ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            ['password', 'string', 'min' => 5],
         ];
     }
 
     /**
      * Signs user up.
-     *
+     * @return User|null the saved model or null if saving fails
      * @return bool whether the creating new account was successful and email was sent
+     * @throws \yii\base\Exception
      */
     public function signup()
     {
@@ -54,7 +55,13 @@ class SignupForm extends Model
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
-        return $user->save() && $this->sendEmail($user);
+
+        if ($user->save() && $this->sendEmail($user)) {
+
+            $user->trigger(User::EVENT_USER_HAS_BEEN_CREATED);
+            return $user;
+        }
+        return null;
 
     }
 
