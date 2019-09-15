@@ -39,7 +39,7 @@ class SignupForm extends Model
 
     /**
      * Signs user up.
-     * @return User|null the saved model or null if saving fails
+     * @return bool
      * @return bool whether the creating new account was successful and email was sent
      * @throws \yii\base\Exception
      */
@@ -56,12 +56,13 @@ class SignupForm extends Model
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
 
-        if ($user->save() && $this->sendEmail($user)) {
-
-            $user->trigger(User::EVENT_USER_HAS_BEEN_CREATED);
-            return $user;
-        }
-        return null;
+//        if ($user->save() && $this->sendEmail($user)) {
+//
+//            $user->trigger(User::EVENT_USER_HAS_BEEN_CREATED);
+//            return $user;
+//        }
+//        return null;
+        return $user->save() && $this->sendEmail($user);
 
     }
 
