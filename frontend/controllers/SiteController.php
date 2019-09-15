@@ -43,7 +43,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['only-admin', 'add-admin'],
                         'allow' => true,
-                        'roles' => ['admin'],
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -98,7 +98,6 @@ class SiteController extends Controller
             return $this->goBack();
         } else {
             $model->password = '';
-
             return $this->render('login', [
                 'model' => $model,
             ]);
@@ -135,14 +134,14 @@ class SiteController extends Controller
             $user->generateAuthKey();
             if ($user->save()) {
                 echo 'good';
-                $adminRole = Yii::$app->authManager->getRole('admin');
-                Yii::$app->authManager->assign($adminRole, $user->id);
+//                $adminRole = Yii::$app->authManager->getRole('admin');
+//                Yii::$app->authManager->assign($adminRole, $user->id);
             } else {
                 var_dump($user->errors);
             }
         } else {
-            $adminRole = Yii::$app->authManager->getRole('admin');
-            Yii::$app->authManager->assign($adminRole, $user->id);
+//            $adminRole = Yii::$app->authManager->getRole('admin');
+//            Yii::$app->authManager->assign($adminRole, $user->id);
             echo 'админ уже есть';
         }
     }
@@ -184,17 +183,18 @@ class SiteController extends Controller
      * Signs user up.
      *
      * @return mixed
+     * @throws \yii\base\Exception
      */
     public function actionSignup()
     {
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
+        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+//            if ($user = $model->signup()) {
+//                if (Yii::$app->getUser()->login($user)) {
                     Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
                     return $this->goHome();
-                }
-            }
+//                }
+//            }
         }
 
         return $this->render('signup', [

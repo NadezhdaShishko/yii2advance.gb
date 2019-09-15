@@ -8,6 +8,7 @@ use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use yii\console\Controller;
+
 class SocketController extends Controller
 {
     public function actionStart($port = 8080)
@@ -17,3 +18,4 @@ class SocketController extends Controller
         $server->run();
         echo "Сервер Остановлен \r\n";
     }
+}

@@ -10,6 +10,7 @@ $config = [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
+//    'defaultRouter' => 'project/index',
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [

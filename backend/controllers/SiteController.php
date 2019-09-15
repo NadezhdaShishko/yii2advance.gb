@@ -28,7 +28,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
@@ -76,13 +76,13 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            if (Yii::$app->authManager->checkAccess(Yii::$app->user->getId(), 'admin')) {
+//            if (Yii::$app->authManager->checkAccess(Yii::$app->user->getId(), 'admin')) {
                 return $this->goBack();
-            } else {
-                Yii::$app->user->logout();
-                Yii::$app->getSession()->setFlash('error', "Вы не администратор.<br> Доступ запрещен!");
-                return $this->redirect(['site/login']);
-            }
+//            } else {
+//                Yii::$app->user->logout();
+//                Yii::$app->getSession()->setFlash('error', "Вы не администратор.<br> Доступ запрещен!");
+//                return $this->redirect(['site/login']);
+//            }
         } else {
             $model->password = '';
 
