@@ -1,4 +1,5 @@
 <?php
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -14,6 +15,10 @@ $config = [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'parsers' => [
+                'application/json' => \yii\web\JsonParser::class,
+                'charset' => 'UTF-8',
+            ]
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,10 +41,20 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'defaultRouter' => 'project/index',
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '/' => 'project/index'
+//                [
+//                    'controller' => 'task',
+//                    'class' => \yii\rest\UrlRule::class,
+////                    'pluralize' => false,
+//                    'extraPatterns' => [
+//                            'POST random' => 'random',
+//                        ]
+//                ]
             ],
         ],
 
@@ -52,6 +67,11 @@ $config = [
 //                    '@app/modules' => '@app/themes/first/modules',
 //                    '@app/widgets' => '@app/themes/basic/widgets',
 //                ],
+//            ],
+//        ],
+//        'modules' => [
+//            'api' => [
+//                'class' => 'frontend\modules\api\Default'
 //            ],
 //        ],
     ],

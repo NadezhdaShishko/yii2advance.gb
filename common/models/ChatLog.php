@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "chat_log".
@@ -29,6 +30,15 @@ class ChatLog extends \yii\db\ActiveRecord
     {
         return [
             [['username', 'message', 'created_at'], 'string', 'max' => 255],
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            'class' => TimestampBehavior::class,
+            'createdAtAttribute' => 'created_at',
+            'value' => time(),
         ];
     }
 

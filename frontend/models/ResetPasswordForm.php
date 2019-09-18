@@ -44,7 +44,7 @@ class ResetPasswordForm extends Model
     {
         return [
             ['password', 'required'],
-            ['password', 'string', 'min' => 5],
+            ['password', 'string', 'min' => 6],
         ];
     }
 
@@ -52,6 +52,7 @@ class ResetPasswordForm extends Model
      * Resets password.
      *
      * @return bool if password was reset.
+     * @throws \yii\base\Exception
      */
     public function resetPassword()
     {

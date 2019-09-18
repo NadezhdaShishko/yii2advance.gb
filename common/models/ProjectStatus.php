@@ -16,6 +16,9 @@ use Yii;
  */
 class ProjectStatus extends \yii\db\ActiveRecord
 {
+    const IN_PROGRESS_ID = 1;
+    const IN_PLANNING_ID = 2;
+    const FINISHED_ID = 3;
     /**
      * {@inheritdoc}
      */
@@ -56,5 +59,14 @@ class ProjectStatus extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Project::class,
             ['project_status_id' => 'id']);
+    }
+
+    public static function getProjectStatusName()
+    {
+        return [
+            self::IN_PROGRESS_ID => 'В работе',
+            self::IN_PLANNING_ID => 'Планируется',
+            self::FINISHED_ID => 'Завершён'
+        ];
     }
 }
