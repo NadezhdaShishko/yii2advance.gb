@@ -3,14 +3,15 @@
 
 namespace console\controllers;
 
+use common\models\ProjectStatus;
 use common\models\TaskPriority;
 use common\models\TaskStatus;
 use yii\console\Controller;
 class FillDbController extends Controller
 {
-    public function actionIndex()
+    public function actionInitFill()
     {
-        foreach (TaskStatus::statusName() as $id => $title) {
+        foreach (TaskStatus::getStatusName() as $id => $title) {
             $taskStatus = TaskStatus::findOne($id);
             if (!isset($taskStatus)) {
                 $taskStatus = new TaskStatus();
@@ -37,6 +38,21 @@ class FillDbController extends Controller
             } else {
                 var_dump($taskPriority->id);
                 var_dump($taskPriority->errors);
+                die();
+            }
+        }
+        foreach (ProjectStatus::getProjectStatusName() as $id => $title) {
+            $projectStatus = ProjectStatus::findOne($id);
+            if (!isset($projectStatus)) {
+                $projectStatus = new ProjectStatus();
+                $projectStatus->id = $id;
+            }
+            $projectStatus->title = $title;
+            if ($projectStatus->save()) {
+                echo "status.id={$id} with title={$title} is created \r\n";
+            } else {
+                var_dump($projectStatus->id);
+                var_dump($projectStatus->errors);
                 die();
             }
         }

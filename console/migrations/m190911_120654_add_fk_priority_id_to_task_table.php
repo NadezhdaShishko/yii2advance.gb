@@ -26,7 +26,7 @@ class m190911_120654_add_fk_priority_id_to_task_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk_task_priority_id', 'task_priority');
+        $this->dropForeignKey('fk_task_priority_id', 'task');
     }
 
     /*
