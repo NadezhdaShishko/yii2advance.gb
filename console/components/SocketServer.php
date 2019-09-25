@@ -30,8 +30,9 @@ class SocketServer implements MessageComponentInterface
     {
         $chatLogs = ChatLog::find()->all();
         foreach ($chatLogs as $log) {
+            $log->created_at = \Yii::$app->formatter->asDatetime($log->created_at);
+//            $msg['date']=\Yii::$app->formatter->asDatetime();
             $msg = json_encode($log->attributes);
-            $msg['created_at'] = \Yii::$app->formatter->asDatetime($log->created_at);
             $conn->send($msg);
         }
     }
@@ -55,6 +56,7 @@ class SocketServer implements MessageComponentInterface
         $msg['created_at'] = \Yii::$app->formatter->asDatetime(time());
         $msg = json_encode($msg);
         ChatLog::saveLog($msg);
+
         foreach ($this->clients as $client) {
             // The sender is not the receiver, send to each client connected
             $client->send($msg);
