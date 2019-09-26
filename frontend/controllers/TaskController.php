@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use Yii;
 use common\models\Task;
 use frontend\models\TaskSearch;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

@@ -10,7 +10,10 @@ $params = array_merge(
 $config = [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'api',
+        'log'
+    ],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
@@ -19,6 +22,10 @@ $config = [
                 'application/json' => \yii\web\JsonParser::class,
                 'charset' => 'UTF-8',
             ]
+        ],
+        'formatter' => [
+            'dateFormat' => 'php:d.m.Y',
+            'datetimeFormat' => 'php:d.m.Y H:i:s',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -41,20 +48,47 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'defaultRouter' => 'project/index',
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '/' => 'project/index'
-//                [
-//                    'controller' => 'task',
-//                    'class' => \yii\rest\UrlRule::class,
-////                    'pluralize' => false,
-//                    'extraPatterns' => [
-//                            'POST random' => 'random',
-//                        ]
-//                ]
+                '/' => 'project/index',
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => 'api/user',
+                    'pluralize' => true,
+                    'extraPatterns' => [
+                        // actions
+//                        'POST sign-up' => 'sign-up',
+//                        'POST sign-in' => 'sign-in',
+                        'GET me' => 'me',
+
+                        'GET <id>/tasks' => 'tasks',
+                        'GET tasks' => 'tasks'
+                    ],
+                ],
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => 'api/task',
+                    'pluralize' => true,
+                ],
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => 'api2/user',
+                    'pluralize' => true,
+                    'extraPatterns' => [
+                        // actions
+                        'GET me' => 'me',
+
+                        'GET <id>/tasks' => 'tasks',
+                        'GET tasks' => 'tasks'
+                    ],
+                ],
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => 'api2/task',
+                    'pluralize' => true,
+                ],
             ],
         ],
 
@@ -69,11 +103,14 @@ $config = [
 //                ],
 //            ],
 //        ],
-//        'modules' => [
-//            'api' => [
-//                'class' => 'frontend\modules\api\Default'
-//            ],
-//        ],
+    ],
+    'modules' => [
+        'api' => [
+            'class' => \frontend\modules\api\Module::class
+        ],
+        'api2' => [
+            'class' => \frontend\modules\api2\Module::class
+        ],
     ],
     'params' => $params,
 ];
@@ -94,6 +131,9 @@ if (YII_ENV_DEV) {
         // uncomment the following to add your IP if you are not connecting from localhost.
         'allowedIPs' => ['*'],
     ];
+
+    $config['components']['assetManager']['forceCopy'] = true;
+
 }
 
 return $config;
