@@ -2,8 +2,7 @@
 
 namespace common\widgets\chatWidget;
 
-
-use backend\assets\AppAsset;
+use yii\web\YiiAsset;
 use yii\web\AssetBundle;
 
 class ChatAsset extends AssetBundle
@@ -13,7 +12,7 @@ class ChatAsset extends AssetBundle
     public $css = ['css/chat.css'];
 
     public $depends = [
-        AppAsset::class
+        YiiAsset::class
     ];
 
 }

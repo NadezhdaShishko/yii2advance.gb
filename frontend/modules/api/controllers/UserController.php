@@ -3,125 +3,55 @@
 namespace frontend\modules\api\controllers;
 
 use Yii;
+use common\models\Task;
 use common\models\User;
-use backend\models\UserSearch;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\filters\auth\HttpBearerAuth;
+use yii\rest\ActiveController;
+use yii\web\ForbiddenHttpException;
+use yii\rest\Controller;
 
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class UserController extends \yii\rest\ActiveController
 {
+    public $modelClass = User::class;
+
     /**
      * {@inheritdoc}
      */
     public function behaviors()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
+        $behaviors = parent::behaviors();
+        //подключаем авторизацию через HttpBearerAuth
+        //каждый запрос к этому контроллеру будет фильтроваться через это поведение
+        //authenticator - имеет больший приоритет чем ACF
+        $behaviors['authenticator'] = [
+            'class' => HttpBearerAuth::class,
+            //нужно исключить action которые используются в accessFilter ACF
+            'except' => ['create']
         ];
+        return $behaviors;
     }
 
-    /**
-     * Lists all User models.
-     * @return mixed
-     */
-    public function actionIndex()
+    public function actionMe()
     {
-        $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return \Yii::$app->user->identity;
     }
 
-    /**
-     * Displays a single User model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
+    public function actionTasks($id = null)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new User model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new User();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (is_null($id)) {
+            $id = \Yii::$app->user->id;
         }
 
-        return $this->render('create', [
-            'model' => $model,
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()->where(['author_id' => $id,])
         ]);
+        return $dataProvider;
+//        $task = Task::findAll(['author_id' => $id]);
+//        return $task;
     }
 
-    /**
-     * Updates an existing User model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = User::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
 }
