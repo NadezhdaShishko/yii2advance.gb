@@ -2,7 +2,9 @@
 
 namespace frontend\modules\api\controllers;
 
+
 use Yii;
+use common\models\Project;
 use common\models\Task;
 use common\models\User;
 use yii\data\ActiveDataProvider;
@@ -52,6 +54,21 @@ class UserController extends \yii\rest\ActiveController
         return $dataProvider;
 //        $task = Task::findAll(['author_id' => $id]);
 //        return $task;
+    }
+
+    public function actionProjects($id = null)
+    {
+        if (is_null($id)) {
+            $id = \Yii::$app->user->id;
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Task::find()->where(['author_id' => $id,])
+        ]);
+        return $dataProvider;
+//        $task = Project::findAll(['author_id' => $id]);
+//        return $project;
+
     }
 
 }
