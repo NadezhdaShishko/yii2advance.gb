@@ -5,7 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Task */
-/* @var $authors \common\models\User[] */
+/* @var $activeUsers \common\models\User[] */
 /* @var $projects \common\models\Project[] */
 
 $this->title = 'Изменить задачу: ' . $model->title;
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = 'Изменить';
 
     <?= $this->render('_form', [
         'model' => $model,
-        'authors' => $authors,
+        'activeUsers' => $activeUsers,
         'projects' => $projects
     ]) ?>
 

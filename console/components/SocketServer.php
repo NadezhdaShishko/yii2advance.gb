@@ -3,6 +3,7 @@
 namespace console\components;
 
 use common\models\ChatLog;
+use console\models\ChatMessage;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 
@@ -10,6 +11,7 @@ use Ratchet\MessageComponentInterface;
 class SocketServer implements MessageComponentInterface
 {
     protected $clients;
+    protected $message;
 
     public function __construct()
     {
@@ -21,45 +23,68 @@ class SocketServer implements MessageComponentInterface
     public function onOpen(ConnectionInterface $conn)
     {
         $this->clients->attach($conn);
+        $conn->send('join-user');
         $this->sendWelcomeMessage($conn);
-        $this->showHistory($conn);
+        $conn->send('history');
         echo "New connection! ({$conn->resourceId})\n";
-    }
-
-    private function showHistory($conn)
-    {
-        $chatLogs = ChatLog::find()->all();
-        foreach ($chatLogs as $log) {
-            $log->created_at = \Yii::$app->formatter->asDatetime($log->created_at);
-//            $msg['date']=\Yii::$app->formatter->asDatetime();
-            $msg = json_encode($log->attributes);
-            $conn->send($msg);
-        }
     }
 
     private function sendWelcomeMessage(ConnectionInterface $conn)
     {
         $conn->send(json_encode([
-            'message' => 'Всем привет',
-            'username' => 'Чат студентов geekbrains.ru',
-            'created_at' => \Yii::$app->formatter->asDatetime(time())]));
+            'message' => 'Чат студентов geekbrains.ru',
+            'username' => 'System',
+            'created_datetime' => \Yii::$app->formatter->asDatetime(time())
+        ]));
     }
 
-    public function onMessage(ConnectionInterface $from, $msg)
+    public function sendHistory(ConnectionInterface $from, $chatMessage)
     {
-        $numRecv = count($this->clients) - 1;
-        var_dump($msg);
-        var_dump('clients:' . count($this->clients));
-        echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n",
-            $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
-        $msg = json_decode($msg, true);
-        $msg['created_at'] = \Yii::$app->formatter->asDatetime(time());
-        $msg = json_encode($msg);
-        ChatLog::saveLog($msg);
+        $project_id = $chatMessage['project_id'] ?? null;
+        $task_id = $chatMessage['task_id'] ?? null;
+        $chatLogs = ChatLog::find()->andWhere([
+            'project_id' => $project_id,
+            'task_id' => $task_id
+        ])->limit(10)->orderBy(['created_at' => SORT_ASC])->all();
 
+        foreach ($chatLogs as $chatLog) {
+            $from->send($chatLog->toJson());
+        }
+    }
+
+    public function onMessage(ConnectionInterface $from, $jsonMsg)
+    {
+        $message = json_decode($jsonMsg, true);
+        $action = $message['action'] ?? null;
+
+        if (isset($action)) {
+            if ($action === 'history') {
+                $this->sendHistory($from, $message);
+            } elseif ($action === 'join-user') {
+                $this->sendJoinUserMessage($message);
+            }
+        } else {
+            $this->sendChatMessageToAll($message);
+        }
+    }
+
+    private function sendChatMessageToAll($message)
+    {
+        $chatLog = new ChatLog($message);
+        $chatLog->save();
         foreach ($this->clients as $client) {
-            // The sender is not the receiver, send to each client connected
-            $client->send($msg);
+            $client->send($chatLog->toJson());
+        }
+    }
+
+    private function sendJoinUserMessage($message)
+    {
+        foreach ($this->clients as $client) {
+            $client->send(json_encode([
+                'message' => 'Пользователь ' . $message['username'] . ' присоединился к чату',
+                'username' => 'System',
+                'created_datetime' => \Yii::$app->formatter->asDatetime(time())
+            ]));
         }
     }
 
@@ -71,7 +96,7 @@ class SocketServer implements MessageComponentInterface
 
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        echo "An error has occurred: {$e->getTraceAsString()}\n";
         $conn->close();
     }
 }

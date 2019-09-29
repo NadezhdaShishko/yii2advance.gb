@@ -30,9 +30,9 @@ return [
                 ],
             ],
         ],
-        'authManager' => [
-            'class' => \yii\rbac\DbManager::class,
-        ],
+//        'authManager' => [
+//            'class' => \yii\rbac\DbManager::class,
+//        ],
     ],
     'params' => $params,
 ];

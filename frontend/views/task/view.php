@@ -45,4 +45,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+    <?=\common\widgets\chatWidget\ChatWidget::widget(['task_id' => $model->id]);?>
+
 </div>

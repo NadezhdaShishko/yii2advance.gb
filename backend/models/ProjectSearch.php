@@ -12,7 +12,7 @@ use common\models\Project;
 class ProjectSearch extends Project
 {
     public $authorEmail;
-    public $projectName;
+    public $projectTitle;
     public $workerEmail;
 
     /**
@@ -23,7 +23,7 @@ class ProjectSearch extends Project
         return [
             [['id', 'author_id', 'project_status_id', 'created_at', 'updated_at'], 'integer'],
             [['title'], 'safe'],
-            [['authorEmail', 'projectName', 'workerEmail'], 'string'],
+            [['authorEmail', 'projectTitle', 'workerEmail'], 'string'],
         ];
     }
 
@@ -51,6 +51,9 @@ class ProjectSearch extends Project
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 5,
+            ],
         ]);
 
         $this->load($params);
@@ -71,9 +74,7 @@ class ProjectSearch extends Project
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title]);
-        $query->andFilterWhere(['like', 'email', $this->authorEmail]);
-        $query->andFilterWhere(['like', 'title', $this->projectName]);
-        $query->andFilterWhere(['like', 'email', $this->workerEmail]);
+        $query->andFilterWhere(['like', 'user.email', $this->authorEmail]);
 
         return $dataProvider;
     }

@@ -55,7 +55,7 @@ class TaskPriority extends \yii\db\ActiveRecord
         return $this->hasMany(Task::class, ['priority_id' => 'id']);
     }
 
-    public static function getPriorityName()
+    public static function getPriorityTitle()
     {
         return [
             self::LOW_ID => 'Низкий',

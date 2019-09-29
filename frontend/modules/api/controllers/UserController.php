@@ -63,7 +63,8 @@ class UserController extends \yii\rest\ActiveController
         }
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Task::find()->where(['author_id' => $id,])
+            'query' => Project::find()
+//                ->where(['author_id' => $id,])
         ]);
         return $dataProvider;
 //        $task = Project::findAll(['author_id' => $id]);
