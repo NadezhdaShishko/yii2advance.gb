@@ -59,7 +59,7 @@ class SocketServer implements MessageComponentInterface
 
         if (isset($action)) {
             if ($action === 'history') {
-                $this->sendHistory($from, $message);
+//                $this->sendHistory($from, $message);
             } elseif ($action === 'join-user') {
                 $this->sendJoinUserMessage($message);
             }
@@ -70,8 +70,10 @@ class SocketServer implements MessageComponentInterface
 
     private function sendChatMessageToAll($message)
     {
-        $chatLog = new ChatLog($message);
-        $chatLog->save();
+        var_dump($message);
+        if ( !$chatLog->save()) {var_dump($errors);}
+//        $chatLog = new ChatLog($message);
+//        $chatLog->save();
         foreach ($this->clients as $client) {
             $client->send($chatLog->toJson());
         }
@@ -97,6 +99,8 @@ class SocketServer implements MessageComponentInterface
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
         echo "An error has occurred: {$e->getTraceAsString()}\n";
+        echo "File: {$e->getFile()}\n";
+        echo "Line: {$e->getLine()}";
         $conn->close();
     }
 }
