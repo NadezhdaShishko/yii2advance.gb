@@ -57,7 +57,7 @@ class TaskStatus extends \yii\db\ActiveRecord
         return $this->hasMany(Task::class, ['status_id' => 'id']);
     }
 
-    public static function getStatusName()
+    public static function getStatusTitle()
     {
         return [
             self::NEW_ID => 'Новая',

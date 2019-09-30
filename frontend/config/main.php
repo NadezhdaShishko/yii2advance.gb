@@ -64,12 +64,20 @@ $config = [
                         'GET me' => 'me',
 
                         'GET <id>/tasks' => 'tasks',
-                        'GET tasks' => 'tasks'
+                        'GET tasks' => 'tasks',
+                        'GET <id>/projects' => 'projects',
+                        'GET projects' => 'projects'
+
                     ],
                 ],
                 [
                     'class' => \yii\rest\UrlRule::class,
                     'controller' => 'api/task',
+                    'pluralize' => true,
+                ],
+                [
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => 'api/project',
                     'pluralize' => true,
                 ],
                 [

@@ -2,6 +2,9 @@
 
 
 use common\models\Project;
+use common\models\Task;
+use common\models\TaskPriority;
+use common\models\TaskStatus;
 use frontend\models\ProjectSearch;
 use frontend\models\TaskSearch;
 use yii\data\ActiveDataProvider;
@@ -13,8 +16,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Project */
 /* @var $taskDataProvider ActiveDataProvider */
-/* @var $taskSearch \frontend\models\TaskSearch
- */
+/* @var $taskSearch \frontend\models\TaskSearch */
 
 $this->title = 'Задачи проекта'.$model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Проекты', 'url' => ['index']];
@@ -34,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'project_status_id',
                 'filter' => ArrayHelper::map(Project::find()->asArray()->all(), 'id', 'title'),
                 'value' => function(\common\models\Project $model) {
-                    return \common\models\ProjectStatus::getProjectStatusName()[$model->project_status_id];
+                    return \common\models\ProjectStatus::getProjectStatusTitle()[$model->project_status_id];
                 }
             ],
             [
@@ -58,19 +60,42 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
 //            'project_id',
             'description:ntext',
-            'author_id',
-            'worker_id',
+            [
+                'attribute' => 'authorEmail',
+                'label' => 'Автор',
+                'value' => function(Task $model) {
+                    return $model->author->email;
+                }
+            ],
+            [
+                'attribute' => 'workerEmail',
+                'label' => 'Исполнитель',
+                'value' => function(Task $model) {
+                    return $model->worker->email;
+                }
+            ],
             'deadLine_date',
             'start_date',
             'end_date',
-            'status_id',
-            'priority_id',
+            [
+                'attribute' => 'status_id',
+                'filter' => TaskStatus::getStatusTitle(),
+                'value' => function( Task $model) {
+                    return $model->status->title;
+                }
+            ],
+            [
+                'attribute' => 'priority_id',
+                'filter' => TaskPriority::getPriorityTitle(),
+                'value' => function(Task $model) {
+                    return $model->priority->title;
+                }
+            ],
             'created_at:datetime',
             //'updated_at',
 
         ],
     ]); ?>
-
-
+    <?= \common\widgets\chatWidget\ChatWidget::widget(['project_id' => $model->id]);?>
 
 </div>

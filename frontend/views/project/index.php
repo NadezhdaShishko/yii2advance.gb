@@ -3,6 +3,7 @@
 use common\models\Project;
 use common\models\ProjectStatus;
 use common\models\User;
+use common\widgets\chatWidget\ChatWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -24,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-//            'title',
             [
                 'attribute' => 'title',
                 'format' => 'raw',
@@ -34,17 +34,17 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'project_status_id',
-//                'filter' => \common\models\ProjectStatus::getProjectStatusName(),
+//                'filter' => \common\models\ProjectStatus::getProjectStatusTitle(),
                 'filter' => ArrayHelper::map(ProjectStatus::find()->asArray()->all(), 'id', 'title'),
                 'value' => function(\common\models\Project $model) {
 //                    return $model->projectStatus->title;
-                    return \common\models\ProjectStatus::getProjectStatusName()[$model->project_status_id];
+                    return \common\models\ProjectStatus::getProjectStatusTitle()[$model->project_status_id];
                 }
             ],
             [
-                'attribute' => 'author_id',
-//                'filter' => User::find(),
-                'value' => function(\common\models\Project $model) {
+                'attribute' => 'authorEmail',
+                'label' => 'Автор проекта',
+                'value' => function(Project $model) {
                     return $model->author->email;
                 }
             ],
@@ -53,6 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ],
     ]); ?>
-
+<?= \common\widgets\chatWidget\ChatWidget::widget();?>
 
 </div>

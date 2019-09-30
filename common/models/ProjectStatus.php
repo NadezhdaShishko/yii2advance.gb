@@ -61,7 +61,7 @@ class ProjectStatus extends \yii\db\ActiveRecord
             ['project_status_id' => 'id']);
     }
 
-    public static function getProjectStatusName()
+    public static function getProjectStatusTitle()
     {
         return [
             self::IN_PROGRESS_ID => 'В работе',

@@ -44,12 +44,15 @@ class ProjectSearch extends Project
      */
     public function search($params)
     {
-        $query = Project::find();
+        $query = Project::find()->joinWith('author');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 5,
+            ],
         ]);
 
         $this->load($params);
@@ -70,8 +73,8 @@ class ProjectSearch extends Project
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title]);
-        $query->andFilterWhere(['like', 'email', $this->authorEmail]);
-        $query->andFilterWhere(['like', 'email', $this->workerEmail]);
+        $query->andFilterWhere(['like', 'user.email', $this->authorEmail]);
+        $query->andFilterWhere(['like', 'user.email', $this->workerEmail]);
 
         return $dataProvider;
     }
