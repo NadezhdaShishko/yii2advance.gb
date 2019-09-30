@@ -47,7 +47,11 @@ class TaskSearch extends Task
      */
     public function search($params)
     {
-        $query = Task::find()->joinWith($this->author);
+        $query = Task::find()->joinWith('project')->joinWith('author');
+
+        if (isset($project_id)) {
+            $query->where(['project_id' => $project_id]);
+        }
 
         // add conditions that should always apply here
 

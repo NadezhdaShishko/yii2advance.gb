@@ -44,7 +44,7 @@ class ProjectSearch extends Project
      */
     public function search($params)
     {
-        $query = Project::find();
+        $query = Project::find()->joinWith('author');
 
         // add conditions that should always apply here
 

@@ -47,14 +47,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'authorEmail',
                 'label' => 'Автор',
                 'value' => function(Task $model) {
-                    return $model->author->username;
+                    return $model->author->email;
                 }
             ],
             [
                 'attribute' => 'workerEmail',
                 'label' => 'Исполнитель',
                 'value' => function(Task $model) {
-                    return $model->worker->username;
+                    return $model->worker->email;
                 }
             ],
 //            'worker_id',

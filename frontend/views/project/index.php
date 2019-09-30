@@ -25,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-//            'title',
             [
                 'attribute' => 'title',
                 'format' => 'raw',
@@ -43,9 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             [
-                'attribute' => 'author_id',
-//                'filter' => User::find(),
-                'value' => function(\common\models\Project $model) {
+                'attribute' => 'authorEmail',
+                'label' => 'Автор проекта',
+                'value' => function(Project $model) {
                     return $model->author->email;
                 }
             ],

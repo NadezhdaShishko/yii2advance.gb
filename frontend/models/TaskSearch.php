@@ -11,6 +11,10 @@ use common\models\Task;
  */
 class TaskSearch extends Task
 {
+    public $authorEmail;
+    public $projectTitle;
+    public $workerEmail;
+
     /**
      * {@inheritdoc}
      */
@@ -18,7 +22,10 @@ class TaskSearch extends Task
     {
         return [
             [['id', 'author_id', 'worker_id', 'deadLine_date', 'start_date', 'end_date', 'status_id', 'priority_id', 'created_at', 'updated_at', 'project_id'], 'integer'],
+            [['deadLine_date', 'start_date', 'end_date'], 'date', 'format' => 'php:d.M.Y'],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:d.M.Y'],
             [['title', 'description'], 'safe'],
+            [['authorEmail', 'projectTitle', 'workerEmail'], 'string'],
         ];
     }
 
@@ -64,9 +71,42 @@ class TaskSearch extends Task
             return $dataProvider;
         }
 
+        if (!empty($this->deadLine_date)) {
+            $dayStart = \Yii::$app->formatter->asTimestamp($this->deadLine_date . ' 00:00:00');
+            $dayStop = \Yii::$app->formatter->asTimestamp($this->deadLine_date . ' 23:59:59');
+            $query->andFilterWhere([
+                'between',
+                self::tableName() . '.deadLine_date',
+                $dayStart,
+                $dayStop,
+            ]);
+        }
+
+        if (!empty($this->start_date)) {
+            $dayStart = \Yii::$app->formatter->asTimestamp($this->start_date . ' 00:00:00');
+            $dayStop = \Yii::$app->formatter->asTimestamp($this->start_date . ' 23:59:59');
+            $query->andFilterWhere([
+                'between',
+                self::tableName() . '.start_date',
+                $dayStart,
+                $dayStop,
+            ]);
+        }
+        if (!empty($this->end_date)) {
+            $dayStart = \Yii::$app->formatter->asTimestamp($this->end_date . ' 00:00:00');
+            $dayStop = \Yii::$app->formatter->asTimestamp($this->end_date . ' 23:59:59');
+            $query->andFilterWhere([
+                'between',
+                self::tableName() . '.end_date',
+                $dayStart,
+                $dayStop,
+            ]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'project_id' => $this->project_id,
             'author_id' => $this->author_id,
             'worker_id' => $this->worker_id,
             'deadLine_date' => $this->deadLine_date,
@@ -76,11 +116,13 @@ class TaskSearch extends Task
             'priority_id' => $this->priority_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'project_id' => $this->project_id,
         ]);
 
-        $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'task.title', $this->title])
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'user.email', $this->authorEmail])
+            ->andFilterWhere(['like', 'user.email', $this->workerEmail])
+            ->andFilterWhere(['like', 'project.title', $this->projectTitle]);
 
         return $dataProvider;
     }

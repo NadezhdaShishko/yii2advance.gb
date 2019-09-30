@@ -44,10 +44,12 @@ class ChatLog extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'class' => TimestampBehavior::class,
-            'createdAtAttribute' => 'created_at',
-            'updatedAtAttribute' => false,
-            'value' => time(),
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => false,
+                'value' => time(),
+            ],
         ];
     }
 
